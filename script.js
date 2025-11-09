@@ -180,15 +180,22 @@ function spawnDeveloperFaces() {
 
 const dropArea = document.getElementById("drop-area");
 const inputFile = document.getElementById("input-file");
+const cameraInput = document.getElementById("camera-input");
 const imgView = document.getElementById("img-view");
 const analyzeBtn = document.getElementById("analyzeBtn");
 const loadingSpinner = document.getElementById("loadingSpinner");
 const resultsContainer = document.getElementById("resultsContainer");
 
 inputFile.addEventListener("change", uploadImage);
+cameraInput.addEventListener("change", uploadImage);
+
+// Camera button click handler
+document.getElementById("cameraBtn").addEventListener("click", () => {
+  cameraInput.click();
+});
 
 function uploadImage() {
-  const file = inputFile.files[0];
+  const file = inputFile.files[0] || cameraInput.files[0];
   if (file) {
     const imgLink = URL.createObjectURL(file);
     imgView.style.backgroundImage = `url(${imgLink})`;
@@ -221,14 +228,15 @@ dropArea.addEventListener("drop", (e) => {
 });
 
 async function sendImage() {
-  if (!inputFile.files.length) {
+  if (!inputFile.files.length && !cameraInput.files.length) {
     alert("Please select an image");
     return;
   }
 
   const formData = new FormData();
-  formData.append("image", inputFile.files[0]);
-  const backendURL = "http://127.0.0.1:5000/api/process-image";
+  const file = inputFile.files.length > 0 ? inputFile.files[0] : cameraInput.files[0];
+  formData.append("image", file);
+  const backendURL = "http://127.0.0.1:5000/api/process-image";  // Changed from port 5000 to match backend
 
   analyzeBtn.disabled = true;
   loadingSpinner.classList.add("active");
@@ -274,7 +282,8 @@ function displayResults(data) {
     resultsContainer.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }, 300);
   
-  addAgentComment(percentages);
+  // Add the banana quote
+  addBananaQuote(percentages);
 }
 
 function updateProgressBar(color, percentage) {
@@ -333,47 +342,6 @@ function updateRipenessStatus(percentages) {
   `;
 }
 
-document.getElementById("topLeftButton").addEventListener("click", () => {
-  spawnDeveloperFaces();
-});
-
-document.querySelector("h1").addEventListener("click", () => {
-  if (confirm("Reset and analyze a new banana?")) {
-    resetAnalysis();
-  }
-});
-
-function resetAnalysis() {
-  imgView.style.backgroundImage = "";
-  imgView.classList.remove("has-image");
-  imgView.innerHTML = `
-    <img src="rotating-banana-banana.gif" alt="Upload Icon" class="upload-icon">
-    <p class="upload-title">Click or Drag to Upload</p>
-    <span class="upload-subtitle">Upload an image of your banana</span>
-    <p class="upload-description"><b>Send an image of your banana and we will determine its edibility 🍌</b></p>
-  `;
-  
-  inputFile.value = "";
-  analyzeBtn.disabled = true;
-  resultsContainer.classList.remove("active");
-  loadingSpinner.classList.remove("active");
-  window.scrollTo({ top: 0, behavior: "smooth" });
-}
-
-document.addEventListener("keydown", (e) => {
-  if (e.key === "Enter" && document.activeElement === dropArea) {
-    inputFile.click();
-  }
-});
-
-console.log("%c🍌 BANANA EATS 🍌", "font-size: 24px; font-weight: bold; color: #fff176; text-shadow: 2px 2px 4px #333;");
-console.log("%cWelcome to Banana Eats! Upload a banana image to check its ripeness.", "font-size: 14px; color: #666;");
-
-function toggleAgent() {
-  const agent = document.getElementById('aiAgent');
-  agent.classList.toggle('minimized');
-}
-
 async function getBananaComment(percentages) {
   const prompt = `You are a friendly, enthusiastic banana expert AI with a quirky personality. 
 You just analyzed a banana with these color percentages:
@@ -404,27 +372,68 @@ Be encouraging, use banana puns if appropriate, and show genuine emotion about t
   }
 }
 
-async function addAgentComment(percentages) {
-  const agentMessages = document.getElementById('agentMessages');
-  const thinking = document.querySelector('.thinking');
-  const emptyState = document.querySelector('.empty-state');
+async function addBananaQuote(percentages) {
+  const quoteContainer = document.querySelector('.banana-quote-container');
+  const quoteText = document.getElementById('bananaQuote');
   
-  if (emptyState) emptyState.remove();
+  // Show loading state
+  quoteText.textContent = "Let me think about this banana...";
+  quoteContainer.classList.add('active');
   
-  thinking.style.display = 'flex';
+  // Get the AI comment
   const comment = await getBananaComment(percentages);
-  thinking.style.display = 'none';
   
-  const messageDiv = document.createElement('div');
-  messageDiv.className = 'chat-message';
-  messageDiv.innerHTML = `
-    <div class="message-time">${new Date().toLocaleTimeString()}</div>
-    <div class="message-text">${comment}</div>
+  // Display the comment
+  quoteText.textContent = comment;
+}
+
+document.getElementById("topLeftButton").addEventListener("click", () => {
+  spawnDeveloperFaces();
+});
+
+document.querySelector("h1").addEventListener("click", () => {
+  if (confirm("Reset and analyze a new banana?")) {
+    resetAnalysis();
+  }
+});
+
+function resetAnalysis() {
+  imgView.style.backgroundImage = "";
+  imgView.classList.remove("has-image");
+  imgView.innerHTML = `
+    <img src="rotating-banana-banana.gif" alt="Upload Icon" class="upload-icon">
+    <p class="upload-title">Click or Drag to Upload</p>
+    <span class="upload-subtitle">Upload an image of your banana</span>
+    <p class="upload-description"><b>Send an image of your banana and we will determine its edibility 🍌</b></p>
+    <button id="cameraBtn" class="camera-btn">
+      <span class="camera-icon">📷</span>
+      Open Camera
+    </button>
   `;
   
-  agentMessages.appendChild(messageDiv);
-  agentMessages.scrollTop = agentMessages.scrollHeight;
+  inputFile.value = "";
+  cameraInput.value = "";
+  analyzeBtn.disabled = true;
+  resultsContainer.classList.remove("active");
+  loadingSpinner.classList.remove("active");
   
-  const agent = document.getElementById('aiAgent');
-  agent.classList.remove('minimized');
+  // Re-attach camera button listener after reset
+  document.getElementById("cameraBtn").addEventListener("click", () => {
+    cameraInput.click();
+  });
+  
+  // Hide the banana quote
+  const quoteContainer = document.querySelector('.banana-quote-container');
+  quoteContainer.classList.remove('active');
+  
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && document.activeElement === dropArea) {
+    inputFile.click();
+  }
+});
+
+console.log("%c🍌 BANANA EATS 🍌", "font-size: 24px; font-weight: bold; color: #fff176; text-shadow: 2px 2px 4px #333;");
+console.log("%cWelcome to Banana Eats! Upload a banana image to check its ripeness.", "font-size: 14px; color: #666;");
