@@ -9,6 +9,11 @@ import numpy as np
 import pandas as pd
 import io
 
+if not os.path.exists('/model/banana_ripeness.h5')
+    gdown.download('https://drive.google.com/file/d/1W0c3OWKpOaMxtuEofTCuAqyR5tM6b1wU/view?usp=sharing', '/model/banana_ripeness.h5', quiet = False)
+if not os.path.exists('/model/banana_regression_uncertainty.joblib')
+    gdown.download('https://drive.google.com/file/d/1ESymScvSBZw1X7EWwRgefa3u46tyFgMK/view?usp=drive_link', '/model/banana_regression_uncertainty.joblib', quiet = False)
+
 app = Flask(__name__)
 CORS(app)  # Enable CORS for frontend integration
 
