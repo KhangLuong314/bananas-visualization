@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🍌 BANANA EATS - AI Banana Analyzer</title>
+  <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+  <!-- Top Navigation -->
+  <button id="topLeftButton" aria-label="Meet the Developers">
+    <span class="button-icon">👥</span>
+    <span class="button-text">Meet the Developers!</span>
+  </button>
+
+  <!-- Developer Faces Container -->
+  <div id="developerFacesContainer"></div>
+
+  <!-- Main Container -->
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <h1>
+        <span class="banana-icon">🍌</span>
+        BANANA EATS
+        <span class="banana-icon">🍌</span>
+      </h1>
+      <p class="subtitle">AI-Powered Banana Ripeness Analyzer</p>
+    </header>
+
+    <!-- Upload Section -->
+    <div class="hero">
+      <label for="input-file" id="drop-area">
+        <input type="file" accept="image/*" id="input-file">
+        <div id="img-view">
+          <img src="rotating-banana-banana.gif" alt="Upload Icon" class="upload-icon">
+          <p class="upload-title">Click or Drag to Upload</p>
+          <span class="upload-subtitle">Upload an image of your banana</span>
+          <p class="upload-description"><b>Send an image of your banana and we will determine its edibility 🍌</b></p>
+        </div>
+      </label>
+
+      <!-- Analyze Button -->
+      <button id="analyzeBtn" onclick="sendImage()" disabled>
+        <span class="btn-icon">🔍</span>
+        Analyze Banana
+      </button>
+
+      <!-- Loading Spinner -->
+      <div id="loadingSpinner" class="spinner-container">
+        <div class="spinner"></div>
+        <p>Analyzing your banana...</p>
+      </div>
+    </div>
+
+    <!-- Results Section -->
+    <div id="resultsContainer" class="results-container">
+      <div class="results-grid">
+        <!-- Edibility Status -->
+        <div class="result-card status-card">
+          <h3>Ripeness Status</h3>
+          <div id="statusIndicator" class="status-indicator">
+            <div class="status-emoji">🍌</div>
+            <p class="status-text">Upload a banana to analyze</p>
+          </div>
+        </div>
+
+        <!-- Color Analysis -->
+        <div class="result-card">
+          <h3>Color Analysis</h3>
+          <div id="results" class="color-results">
+            <div class="color-bar-container">
+              <div class="color-info">
+                <span class="color-dot yellow-dot"></span>
+                <span class="color-label">Yellow</span>
+              </div>
+              <div class="progress-bar">
+                <div id="yellowBar" class="progress-fill yellow-fill" style="width: 0%"></div>
+              </div>
+              <span id="yellowPercent" class="percent-text">0%</span>
+            </div>
+            <div class="color-bar-container">
+              <div class="color-info">
+                <span class="color-dot brown-dot"></span>
+                <span class="color-label">Brown</span>
+              </div>
+              <div class="progress-bar">
+                <div id="brownBar" class="progress-fill brown-fill" style="width: 0%"></div>
+              </div>
+              <span id="brownPercent" class="percent-text">0%</span>
+            </div>
+            <div class="color-bar-container">
+              <div class="color-info">
+                <span class="color-dot black-dot"></span>
+                <span class="color-label">Black</span>
+              </div>
+              <div class="progress-bar">
+                <div id="blackBar" class="progress-fill black-fill" style="width: 0%"></div>
+              </div>
+              <span id="blackPercent" class="percent-text">0%</span>
+            </div>
+            <div class="color-bar-container">
+              <div class="color-info">
+                <span class="color-dot white-dot"></span>
+                <span class="color-label">White</span>
+              </div>
+              <div class="progress-bar">
+                <div id="whiteBar" class="progress-fill white-fill" style="width: 0%"></div>
+              </div>
+              <span id="whitePercent" class="percent-text">0%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Processed Image -->
+      <div class="processed-section">
+        <h3>Processed Image</h3>
+        <div class="image-comparison">
+          <img id="outputImage" alt="Processed banana analysis">
+        </div>
+      </div>
+    </div>
+  </div>
+<!-- Footer -->
+  <footer>
+    <p>Made with 💛 for banana lovers everywhere</p>
+  </footer>
+
+  <!-- AI Agent Widget -->
+  <div class="ai-agent" id="aiAgent">
+    <div class="agent-header" onclick="toggleAgent()">
+      <div class="agent-title">
+        <span class="agent-icon">🍌</span>
+        <span>Banana Bot</span>
+      </div>
+      <div class="minimize-btn">−</div>
+    </div>
+    <div class="agent-body">
+      <div id="agentMessages">
+        <div class="empty-state">
+          Upload a banana image to see what I think! 🍌✨
+        </div>
+      </div>
+      <div class="thinking" style="display: none;">
+        <div class="thinking-dot"></div>
+        <div class="thinking-dot"></div>
+        <div class="thinking-dot"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
+  <script src="script.js"></script>
+</body>
+</html>
