@@ -120,8 +120,8 @@ banana_regression_uncertainty.joblib – Random Forest model trained on HSV colo
 
 🧑‍💻 Contributors
 
-Backend: Khang Luong
+Backend: Daniel Tran
 
-Frontend: [Team Member / You]
+Frontend: Mary Tran
 
-ML Models: TensorFlow + scikit-learn integration
+ML Models: Khang Luong and Cat Dinh
