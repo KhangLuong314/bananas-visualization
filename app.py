@@ -12,6 +12,9 @@ import os
 import base64
 import random
 
+# Get port from environment variable (Render sets this automatically)
+PORT = int(os.environ.get('PORT', 5001))
+
 # Download models if they don't exist
 try:
     import gdown
@@ -19,17 +22,32 @@ try:
     if not os.path.exists('model'):
         os.makedirs('model')
     
-    # TODO: Replace these with YOUR actual Google Drive file IDs
-    CLASSIFICATION_MODEL_ID = "1W0c3OWKpOaMxtuEofTCuAqyR5tM6b1wU"  # REPLACE THIS
-    REGRESSION_MODEL_ID = "1ESymScvSBZw1X7EWwRgefa3u46tyFgMK"      # REPLACE THIS
+    # Your Google Drive file IDs - REPLACE WITH YOUR ACTUAL IDs
+    CLASSIFICATION_MODEL_ID = "1W0c3OWKpOaMxtuEofTCuAqyR5tM6b1wU"
+    REGRESSION_MODEL_ID = "1ESymScvSBZw1X7EWwRgefa3u46tyFgMK"
     
     if not os.path.exists('model/banana_ripeness.h5'):
-        print("Downloading classification model from YOUR Google Drive...")
-        gdown.download(f'https://drive.google.com/uc?id={CLASSIFICATION_MODEL_ID}', 'model/banana_ripeness.h5', quiet=False)
+        print("Downloading classification model from Google Drive...")
+        gdown.download(
+            f'https://drive.google.com/uc?id={CLASSIFICATION_MODEL_ID}',
+            'model/banana_ripeness.h5',
+            quiet=False,
+            fuzzy=True
+        )
+    else:
+        print("Classification model already exists")
     
     if not os.path.exists('model/banana_regression_uncertainty.joblib'):
-        print("Downloading regression model from YOUR Google Drive...")
-        gdown.download(f'https://drive.google.com/uc?id={REGRESSION_MODEL_ID}', 'model/banana_regression_uncertainty.joblib', quiet=False)
+        print("Downloading regression model from Google Drive...")
+        gdown.download(
+            f'https://drive.google.com/uc?id={REGRESSION_MODEL_ID}',
+            'model/banana_regression_uncertainty.joblib',
+            quiet=False,
+            fuzzy=True
+        )
+    else:
+        print("Regression model already exists")
+        
 except Exception as e:
     print(f"Note: Model download failed: {e}")
     print("Please ensure models are in the 'model' directory")
@@ -219,6 +237,7 @@ def generate_banana_comment(percentages, classification, days_estimate):
     return random.choice(comments)
 
 def interpret_prediction(pred_mean, pred_std):
+    """Interpret the regression model prediction"""
     if pred_mean <= 6:
         status = "Unripe 🟢"
         message = "Your banana needs more time to ripen. Wait a few more days."
@@ -435,5 +454,6 @@ def model_info():
 
 if __name__ == "__main__":
     print("Starting Banana Eats backend server...")
-    print("Server running on http://127.0.0.1:5001")
-    app.run(debug=True, host="0.0.0.0", port=5001)
+    print(f"Server running on port {PORT}")
+    # debug=False for production, host 0.0.0.0 to accept external connections
+    app.run(debug=False, host="0.0.0.0", port=PORT)
