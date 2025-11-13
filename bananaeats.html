@@ -13,8 +13,209 @@
     <span class="button-text">Meet the Developers!</span>
   </button>
 
+
   <!-- Developer Faces Container -->
   <div id="developerFacesContainer"></div>
+
+  <!-- Developer Intro Modal -->
+  <div id="developerIntroModal" class="developer-modal">
+    <div class="modal-content">
+      <button class="close-modal" onclick="closeDeveloperIntro()">✕</button>
+      <h2 class="modal-title">🍌 Meet the Banana Eats Team 🍌</h2>
+      
+      <!-- Carousel Container -->
+      <div class="carousel-container">
+        <!-- Carousel Slides -->
+        <div class="carousel-slides">
+          <!-- Slide 1 - Cat -->
+          <div class="carousel-slide active" data-slide="0">
+            <div class="slide-content">
+              <div class="slide-image-section">
+                <div class="image-spotlight">
+                  <img src="cat.png" alt="Cat Dinh" class="spotlight-image">
+                  <div class="image-glow"></div>
+                </div>
+                <div class="floating-emojis">
+                  <span class="float-emoji" style="--delay: 0s;">🍌</span>
+                  <span class="float-emoji" style="--delay: 1s;">💻</span>
+                  <span class="float-emoji" style="--delay: 2s;">🤖</span>
+                </div>
+              </div>
+              <div class="slide-info-section">
+                <div class="name-tag">
+                  <h3 class="spotlight-name">Cat Dinh</h3>
+                  <p class="spotlight-role">🎯 Lead Developer & AI Specialist</p>
+                </div>
+                <div class="bio-container">
+                  <p class="spotlight-bio">The mastermind behind the AI models! Cat trained our neural networks to achieve 99% accuracy in banana ripeness detection. When she's not coding, she's probably eating perfectly ripe bananas.</p>
+                  <div class="spotlight-stats">
+                    <div class="stat-badge">
+                      <span class="stat-icon">🍌</span>
+                      <span class="stat-text">Favorite: Perfectly Ripe</span>
+                    </div>
+                    <div class="stat-badge">
+                      <span class="stat-icon">💻</span>
+                      <span class="stat-text">TensorFlow & Deep Learning</span>
+                    </div>
+                    <div class="stat-badge">
+                      <span class="stat-icon">🏆</span>
+                      <span class="stat-text">99% Model Accuracy</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Slide 2 - Mary -->
+          <div class="carousel-slide" data-slide="1">
+            <div class="slide-content">
+              <div class="slide-image-section">
+                <div class="image-spotlight">
+                  <img src="mary.png" alt="Mary Tran" class="spotlight-image">
+                  <div class="image-glow"></div>
+                </div>
+                <div class="floating-emojis">
+                  <span class="float-emoji" style="--delay: 0s;">🎨</span>
+                  <span class="float-emoji" style="--delay: 1s;">✨</span>
+                  <span class="float-emoji" style="--delay: 2s;">🖌️</span>
+                </div>
+              </div>
+              <div class="slide-info-section">
+                <div class="name-tag">
+                  <h3 class="spotlight-name">Mary Tran</h3>
+                  <p class="spotlight-role">🎨 Frontend Wizard & UX Designer</p>
+                </div>
+                <div class="bio-container">
+                  <p class="spotlight-bio">Created the beautiful interface you're using right now! Mary's design philosophy: "Make it so smooth, even a banana would slide through it." She's obsessed with animations and user experience.</p>
+                  <div class="spotlight-stats">
+                    <div class="stat-badge">
+                      <span class="stat-icon">🍌</span>
+                      <span class="stat-text">Favorite: Slightly Overripe</span>
+                    </div>
+                    <div class="stat-badge">
+                      <span class="stat-icon">💻</span>
+                      <span class="stat-text">React & CSS Magic</span>
+                    </div>
+                    <div class="stat-badge">
+                      <span class="stat-icon">🏆</span>
+                      <span class="stat-text">UI/UX Excellence</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Slide 3 - Khang -->
+          <div class="carousel-slide" data-slide="2">
+            <div class="slide-content">
+              <div class="slide-image-section">
+                <div class="image-spotlight">
+                  <img src="khang.png" alt="Khang Luong" class="spotlight-image">
+                  <div class="image-glow"></div>
+                </div>
+                <div class="floating-emojis">
+                  <span class="float-emoji" style="--delay: 0s;">🔬</span>
+                  <span class="float-emoji" style="--delay: 1s;">📊</span>
+                  <span class="float-emoji" style="--delay: 2s;">🧪</span>
+                </div>
+              </div>
+              <div class="slide-info-section">
+                <div class="name-tag">
+                  <h3 class="spotlight-name">Khang Luong</h3>
+                  <p class="spotlight-role">🔬 Data Scientist & Algorithm Expert</p>
+                </div>
+                <div class="bio-container">
+                  <p class="spotlight-bio">The data whisperer! Khang analyzed thousands of banana images to create our color detection algorithm. He can tell you the exact ripeness level just by looking at a banana for 0.5 seconds.</p>
+                  <div class="spotlight-stats">
+                    <div class="stat-badge">
+                      <span class="stat-icon">🍌</span>
+                      <span class="stat-text">Favorite: Golden Yellow</span>
+                    </div>
+                    <div class="stat-badge">
+                      <span class="stat-icon">💻</span>
+                      <span class="stat-text">Computer Vision & OpenCV</span>
+                    </div>
+                    <div class="stat-badge">
+                      <span class="stat-icon">🏆</span>
+                      <span class="stat-text">10,000+ Images Analyzed</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Slide 4 - Daniel -->
+          <div class="carousel-slide" data-slide="3">
+            <div class="slide-content">
+              <div class="slide-image-section">
+                <div class="image-spotlight">
+                  <img src="daniel.png" alt="Daniel Tran" class="spotlight-image">
+                  <div class="image-glow"></div>
+                </div>
+                <div class="floating-emojis">
+                  <span class="float-emoji" style="--delay: 0s;">⚙️</span>
+                  <span class="float-emoji" style="--delay: 1s;">🚀</span>
+                  <span class="float-emoji" style="--delay: 2s;">☁️</span>
+                </div>
+              </div>
+              <div class="slide-info-section">
+                <div class="name-tag">
+                  <h3 class="spotlight-name">Daniel Tran</h3>
+                  <p class="spotlight-role">⚙️ Backend Engineer & DevOps</p>
+                </div>
+                <div class="bio-container">
+                  <p class="spotlight-bio">The one who makes everything work seamlessly! Daniel built the Flask backend and ensures our servers never slip up. He can deploy faster than a banana ripens in the sun.</p>
+                  <div class="spotlight-stats">
+                    <div class="stat-badge">
+                      <span class="stat-icon">🍌</span>
+                      <span class="stat-text">Favorite: Green (for cooking!)</span>
+                    </div>
+                    <div class="stat-badge">
+                      <span class="stat-icon">💻</span>
+                      <span class="stat-text">Flask & Cloud Architecture</span>
+                    </div>
+                    <div class="stat-badge">
+                      <span class="stat-icon">🏆</span>
+                      <span class="stat-text">99.9% Uptime</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Progress Bar -->
+        <div class="carousel-progress-bar">
+          <div class="progress-fill" id="carouselProgress"></div>
+        </div>
+
+        <!-- Navigation Dots -->
+        <div class="carousel-dots">
+          <button class="carousel-dot active" data-slide="0" onclick="goToSlide(0)"></button>
+          <button class="carousel-dot" data-slide="1" onclick="goToSlide(1)"></button>
+          <button class="carousel-dot" data-slide="2" onclick="goToSlide(2)"></button>
+          <button class="carousel-dot" data-slide="3" onclick="goToSlide(3)"></button>
+        </div>
+
+        <!-- Navigation Arrows -->
+        <button class="carousel-arrow prev" onclick="previousSlide()">❮</button>
+        <button class="carousel-arrow next" onclick="nextSlide()">❯</button>
+      </div>
+
+      <div class="team-message">
+        <p>✨ Together, we've created an AI-powered tool that has analyzed over 10,000 bananas! ✨</p>
+        <p>Made with 💛 and a lot of potassium</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Audio element for background music -->
+  <audio id="introMusic" loop>
+    <source src="theme-song.mp3" type="audio/mpeg">
+  </audio>
 
   <!-- Main Container -->
   <div class="container">
@@ -32,11 +233,16 @@
     <div class="hero">
       <label for="input-file" id="drop-area">
         <input type="file" accept="image/*" id="input-file">
+        <input type="file" accept="image/*" id="camera-input" capture="environment" style="display: none;">
         <div id="img-view">
           <img src="rotating-banana-banana.gif" alt="Upload Icon" class="upload-icon">
           <p class="upload-title">Click or Drag to Upload</p>
           <span class="upload-subtitle">Upload an image of your banana</span>
           <p class="upload-description"><b>Send an image of your banana and we will determine its edibility 🍌</b></p>
+          <button id="cameraBtn" class="camera-btn" type="button">
+            <span class="camera-icon">📷</span>
+            Open Camera
+          </button>
         </div>
       </label>
 
@@ -101,13 +307,13 @@
             </div>
             <div class="color-bar-container">
               <div class="color-info">
-                <span class="color-dot white-dot"></span>
-                <span class="color-label">White</span>
+                <span class="color-dot green-dot"></span>
+                <span class="color-label">Green</span>
               </div>
               <div class="progress-bar">
-                <div id="whiteBar" class="progress-fill white-fill" style="width: 0%"></div>
+                <div id="greenBar" class="progress-fill green-fill" style="width: 0%"></div>
               </div>
-              <span id="whitePercent" class="percent-text">0%</span>
+              <span id="greenPercent" class="percent-text">0%</span>
             </div>
           </div>
         </div>
@@ -120,9 +326,55 @@
           <img id="outputImage" alt="Processed banana analysis">
         </div>
       </div>
+
+      <!-- AI Prediction Details -->
+      <div class="prediction-details" id="predictionDetails">
+        <h3>🤖 AI Analysis Details</h3>
+        <div class="detail-grid">
+          <div class="detail-card">
+            <div class="detail-icon">🎯</div>
+            <div class="detail-content">
+              <p class="detail-label">Classification</p>
+              <p class="detail-value" id="classificationValue">-</p>
+            </div>
+          </div>
+          <div class="detail-card">
+            <div class="detail-icon">📊</div>
+            <div class="detail-content">
+              <p class="detail-label">Confidence</p>
+              <p class="detail-value" id="confidenceValue">-</p>
+            </div>
+          </div>
+          <div class="detail-card">
+            <div class="detail-icon">📅</div>
+            <div class="detail-content">
+              <p class="detail-label">Ripeness Scale</p>
+              <p class="detail-value" id="daysValue">-</p>
+            </div>
+          </div>
+          <div class="detail-card">
+            <div class="detail-icon">⚖️</div>
+            <div class="detail-content">
+              <p class="detail-label">Uncertainty</p>
+              <p class="detail-value" id="uncertaintyValue">-</p>
+            </div>
+          </div>
+        </div>
+        <div class="uncertainty-explanation">
+          <p><strong>What does uncertainty mean?</strong></p>
+          <p id="uncertaintyExplanation">Lower uncertainty means the model is more confident in its prediction.</p>
+        </div>
+      </div>
+
+      <!-- Banana Quote Section -->
+      <div class="banana-quote-container">
+        <h3>🍌 Banana Bot Says:</h3>
+        <p id="bananaQuote" class="banana-quote-text">Analyzing...</p>
+      </div>
     </div>
   </div>
-<!-- Footer -->
+
+  <!-- Footer -->
   <footer>
     <p>Made with 💛 for banana lovers everywhere</p>
   </footer>
@@ -150,9 +402,6 @@
     </div>
   </div>
 
-  <script src="script.js"></script>
-</body>
-</html>
   <script src="script.js"></script>
 </body>
 </html>
