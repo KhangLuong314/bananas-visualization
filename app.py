@@ -30,10 +30,13 @@ def load_models_lazy():
     global tflite_interpreter, model1
     
     if tflite_interpreter is not None and model1 is not None:
+        print("Models already loaded, skipping...")
         return
     
     try:
-        print("Downloading models from Hugging Face...")
+        print("=" * 60)
+        print("LOADING MODELS FROM HUGGING FACE")
+        print("=" * 60)
         HF_REPO = "khangluong314/banana-ripeness-models"
         
         # Download TFLite classification model
@@ -277,14 +280,16 @@ def interpret_prediction(pred_mean, pred_std):
 def process_image():
     """Main prediction endpoint matching frontend expectations"""
     try:
+        if 'image' not in request.files:
+            return jsonify({"error": "No image file provided"}), 400
+        
         # Load models on first request (lazy loading)
         load_models_lazy()
         
         if tflite_interpreter is None or model1 is None:
-            return jsonify({"error": "Models not loaded"}), 500
-
-        if 'image' not in request.files:
-            return jsonify({"error": "No image file provided"}), 400
+            return jsonify({
+                "error": "Models failed to load. Check server logs for details."
+            }), 500
         
         file = request.files['image']
         if file.filename == '':
