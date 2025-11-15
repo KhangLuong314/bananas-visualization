@@ -9,19 +9,11 @@ import base64
 import random
 from huggingface_hub import hf_hub_download
 
-# IMPORTANT: Set memory growth and configure TensorFlow BEFORE importing
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # Suppress TF logging
-os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'  # Disable oneDNN optimizations
-os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
+# Set TensorFlow environment variables before import
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 
-# Delay TensorFlow import and configure memory
 import tensorflow as tf
-# Limit TensorFlow memory usage
-tf.config.set_visible_devices([], 'GPU')  # Disable GPU
-# Set memory growth to avoid allocating all memory at once
-physical_devices = tf.config.list_physical_devices('CPU')
-
-from tensorflow.keras.models import load_model
 
 # Get port from environment variable
 PORT = int(os.environ.get('PORT', 5001))
@@ -30,25 +22,25 @@ app = Flask(__name__)
 CORS(app)
 
 # Global variables for models
-model0 = None
+tflite_interpreter = None
 model1 = None
 
 def load_models_lazy():
     """Load models only when needed (lazy loading)"""
-    global model0, model1
+    global tflite_interpreter, model1
     
-    if model0 is not None and model1 is not None:
+    if tflite_interpreter is not None and model1 is not None:
         return
     
     try:
         print("Downloading models from Hugging Face...")
         HF_REPO = "khangluong314/banana-ripeness-models"
         
-        # Download classification model
-        print("Downloading classification model...")
-        classification_path = hf_hub_download(
+        # Download TFLite classification model
+        print("Downloading TFLite classification model...")
+        tflite_path = hf_hub_download(
             repo_id=HF_REPO,
-            filename="banana_ripeness.h5",
+            filename="banana_ripeness.tflite",
             cache_dir="./model_cache"
         )
         
@@ -60,24 +52,54 @@ def load_models_lazy():
             cache_dir="./model_cache"
         )
         
-        # Load models with memory optimization
-        print("Loading models into memory...")
+        # Load TFLite model
+        print("Loading TFLite interpreter...")
+        tflite_interpreter = tf.lite.Interpreter(model_path=tflite_path)
+        tflite_interpreter.allocate_tensors()
         
-        # Load classification model with compile=False to save memory
-        model0 = load_model(classification_path, compile=False)
+        # Get input/output details
+        input_details = tflite_interpreter.get_input_details()
+        output_details = tflite_interpreter.get_output_details()
+        
+        print(f"  Input shape: {input_details[0]['shape']}")
+        print(f"  Output shape: {output_details[0]['shape']}")
         
         # Load regression model
+        print("Loading regression model...")
         model1 = load_joblib(regression_path)
         
         print("Models loaded successfully!")
-        
-        # Clear any unnecessary TensorFlow session data
-        tf.keras.backend.clear_session()
+        print(f"  Regression model: {model1.n_estimators} trees, {model1.n_features_in_} features")
         
     except Exception as e:
         print(f"Error loading models: {e}")
         import traceback
         traceback.print_exc()
+
+def predict_tflite(img):
+    """Run inference using TFLite interpreter"""
+    # Get input and output details
+    input_details = tflite_interpreter.get_input_details()
+    output_details = tflite_interpreter.get_output_details()
+    
+    # Preprocess image to match input shape
+    input_shape = input_details[0]['shape']
+    img_resized = cv2.resize(img, (input_shape[1], input_shape[2]))
+    
+    # Normalize to [0, 1]
+    img_normalized = img_resized.astype(np.float32) / 255.0
+    img_input = np.expand_dims(img_normalized, axis=0)
+    
+    # Set input tensor
+    tflite_interpreter.set_tensor(input_details[0]['index'], img_input)
+    
+    # Run inference
+    tflite_interpreter.invoke()
+    
+    # Get output tensor
+    output_data = tflite_interpreter.get_tensor(output_details[0]['index'])
+    
+    return output_data[0]
 
 def extract_features_bgr(img_bgr):
     """Extract color and texture features from BGR image"""
@@ -214,7 +236,7 @@ def generate_banana_comment(percentages, classification, days_estimate):
             ]
         else:
             comments = [
-                f"Still totally edible! With {brown:.0f}% brown, it's super sweet and perfect for baking. Banana bread time? �➡️🍞",
+                f"Still totally edible! With {brown:.0f}% brown, it's super sweet and perfect for baking. Banana bread time? 🌾➡️🍞",
                 f"This banana is on the ripe side with {brown:.0f}% brown spots, but that just means extra sweetness! Use it today! 💛",
                 f"Getting spotty with {brown:.0f}% brown, but don't you dare throw it away! Perfect for smoothies or baking! ♻️"
             ]
@@ -258,7 +280,7 @@ def process_image():
         # Load models on first request (lazy loading)
         load_models_lazy()
         
-        if model0 is None or model1 is None:
+        if tflite_interpreter is None or model1 is None:
             return jsonify({"error": "Models not loaded"}), 500
 
         if 'image' not in request.files:
@@ -282,18 +304,18 @@ def process_image():
         # Create visualization
         processed_image = create_visualization(img, percentages)
 
-        # Step 1: Classification model
-        img_resized = tf.image.resize(img, (256, 256))
-        img_normalized = np.expand_dims(img_resized / 255.0, 0)
-        yhat = model0.predict(img_normalized, verbose=0)
+        # Step 1: Use TFLite classification model
+        yhat = predict_tflite(img)
         
-        class_idx = np.argmax(yhat[0])
-        confidence = float(yhat[0][class_idx])
+        # Get the class with highest probability
+        class_idx = np.argmax(yhat)
+        confidence = float(yhat[class_idx])
         
+        # Map class index to category
         class_names = ["Overripe", "Ripe", "Unripe"]
         result_class = class_names[class_idx]
         
-        # Step 2: Regression model
+        # Step 2: Use regression model for detailed analysis
         img_resized_300 = cv2.resize(img, (300, 300))
         feats = extract_features_bgr(img_resized_300)
         X_new = pd.DataFrame([feats], columns=[
@@ -301,13 +323,18 @@ def process_image():
             "brown_frac", "green_frac", "yellow_frac"
         ])
 
+        # Predict across trees for uncertainty
         all_tree_preds = np.stack([t.predict(X_new.values) for t in model1.estimators_], axis=1)
         pred_mean = np.mean(all_tree_preds, axis=1)[0]
         pred_std = np.std(all_tree_preds, axis=1)[0]
 
+        # Interpret regression result
         interpretation = interpret_prediction(pred_mean, pred_std)
+        
+        # Generate fun banana comment
         banana_comment = generate_banana_comment(percentages, result_class, pred_mean)
         
+        # Return response in format expected by frontend
         return jsonify({
             "percentages": percentages,
             "processed_image": processed_image,
@@ -331,7 +358,7 @@ def health():
     """Health check endpoint"""
     return jsonify({
         "status": "healthy",
-        "models_loaded": model0 is not None and model1 is not None
+        "models_loaded": tflite_interpreter is not None and model1 is not None
     })
 
 @app.route("/model-info", methods=["GET"])
@@ -344,18 +371,19 @@ def model_info():
         "regression_model": None
     }
     
-    if model0 is not None:
+    if tflite_interpreter is not None:
+        input_details = tflite_interpreter.get_input_details()
+        output_details = tflite_interpreter.get_output_details()
         info["classification_model"] = {
-            "type": str(type(model0)),
-            "input_shape": str(model0.input_shape),
-            "output_shape": str(model0.output_shape),
-            "layers": len(model0.layers),
-            "trainable_params": int(model0.count_params())
+            "type": "TensorFlow Lite",
+            "input_shape": str(input_details[0]['shape']),
+            "output_shape": str(output_details[0]['shape']),
+            "input_type": str(input_details[0]['dtype'])
         }
     
     if model1 is not None:
         info["regression_model"] = {
-            "type": str(type(model1)),
+            "type": str(type(model1).__name__),
             "n_estimators": model1.n_estimators,
             "max_depth": model1.max_depth,
             "n_features": model1.n_features_in_
