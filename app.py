@@ -11,54 +11,42 @@ import io
 import os
 import base64
 import random
+from huggingface_hub import hf_hub_download
 
-# Get port from environment variable (Render sets this automatically)
+# Get port from environment variable
 PORT = int(os.environ.get('PORT', 5001))
 
-# Download models if they don't exist
-try:
-    import gdown
-    
-    if not os.path.exists('model'):
-        os.makedirs('model')
-    
-    # Your Google Drive file IDs - REPLACE WITH YOUR ACTUAL IDs
-    CLASSIFICATION_MODEL_ID = "1W0c3OWKpOaMxtuEofTCuAqyR5tM6b1wU"
-    REGRESSION_MODEL_ID = "1ESymScvSBZw1X7EWwRgefa3u46tyFgMK"
-    
-    if not os.path.exists('model/banana_ripeness.h5'):
-        print("Downloading classification model from Google Drive...")
-        gdown.download(
-            f'https://drive.google.com/uc?id={CLASSIFICATION_MODEL_ID}',
-            'model/banana_ripeness.h5',
-            quiet=False,
-            fuzzy=True
-        )
-    else:
-        print("Classification model already exists")
-    
-    if not os.path.exists('model/banana_regression_uncertainty.joblib'):
-        print("Downloading regression model from Google Drive...")
-        gdown.download(
-            f'https://drive.google.com/uc?id={REGRESSION_MODEL_ID}',
-            'model/banana_regression_uncertainty.joblib',
-            quiet=False,
-            fuzzy=True
-        )
-    else:
-        print("Regression model already exists")
-        
-except Exception as e:
-    print(f"Note: Model download failed: {e}")
-    print("Please ensure models are in the 'model' directory")
-
 app = Flask(__name__)
-CORS(app)  # Enable CORS for frontend integration
+CORS(app)
 
-# Load models once at startup
+# Load models from Hugging Face
 try:
-    model0 = load_model("model/banana_ripeness.h5")
-    model1 = load_joblib("model/banana_regression_uncertainty.joblib")
+    print("Downloading models from Hugging Face...")
+    
+    # YOUR HUGGING FACE REPO - REPLACE WITH YOUR USERNAME
+    HF_REPO = "khangluong314/banana-ripeness-models"
+    
+    # Download classification model
+    print("Downloading classification model...")
+    classification_path = hf_hub_download(
+        repo_id=HF_REPO,
+        filename="banana_ripeness.h5",
+        cache_dir="./model_cache"
+    )
+    
+    # Download regression model
+    print("Downloading regression model...")
+    regression_path = hf_hub_download(
+        repo_id=HF_REPO,
+        filename="banana_regression_uncertainty.joblib",
+        cache_dir="./model_cache"
+    )
+    
+    # Load models
+    print("Loading models into memory...")
+    model0 = load_model(classification_path)
+    model1 = load_joblib(regression_path)
+    
     print("Models loaded successfully!")
     print(f"\nClassification Model Summary:")
     print(f"  - Input shape: {model0.input_shape}")
@@ -68,8 +56,11 @@ try:
     print(f"  - Model type: {type(model1).__name__}")
     print(f"  - Number of estimators: {model1.n_estimators}")
     print(f"  - Number of features: {model1.n_features_in_}")
+    
 except Exception as e:
     print(f"Error loading models: {e}")
+    import traceback
+    traceback.print_exc()
     model0 = None
     model1 = None
 
