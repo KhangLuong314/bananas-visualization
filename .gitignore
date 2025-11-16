@@ -41,6 +41,7 @@ Thumbs.db
 model/
 *.h5
 *.joblib
+convert_to_tflite.py
 
 # Logs
 *.log
