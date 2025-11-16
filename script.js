@@ -274,7 +274,7 @@ async function sendImage() {
   const formData = new FormData();
   const file = inputFile.files.length > 0 ? inputFile.files[0] : cameraInput.files[0];
   formData.append("image", file);
-  const backendURL = "http://127.0.0.1:5001/api/process-image";
+  const backendURL = "https://banana-eats-backend.onrender.com/api/process-image";
 
   analyzeBtn.disabled = true;
   loadingSpinner.classList.add("active");
