@@ -73,11 +73,16 @@ def load_models_lazy():
         
         print("Models loaded successfully!")
         print(f"  Regression model: {model1.n_estimators} trees, {model1.n_features_in_} features")
+        print("=" * 60)
         
     except Exception as e:
-        print(f"Error loading models: {e}")
+        print("=" * 60)
+        print(f"ERROR LOADING MODELS: {e}")
+        print("=" * 60)
         import traceback
         traceback.print_exc()
+        tflite_interpreter = None
+        model1 = None
 
 def predict_tflite(img):
     """Run inference using TFLite interpreter"""
@@ -398,6 +403,43 @@ def model_info():
         "models": info,
         "tensorflow_version": tf.__version__
     })
+
+@app.route("/debug/load", methods=["GET"])
+def debug_load():
+    """Debug endpoint to manually trigger model loading and see errors"""
+    import sys
+    import io
+    
+    # Capture stdout/stderr
+    old_stdout = sys.stdout
+    old_stderr = sys.stderr
+    sys.stdout = io.StringIO()
+    sys.stderr = io.StringIO()
+    
+    try:
+        load_models_lazy()
+        stdout_value = sys.stdout.getvalue()
+        stderr_value = sys.stderr.getvalue()
+        
+        return jsonify({
+            "success": tflite_interpreter is not None and model1 is not None,
+            "tflite_loaded": tflite_interpreter is not None,
+            "regression_loaded": model1 is not None,
+            "stdout": stdout_value,
+            "stderr": stderr_value
+        })
+    except Exception as e:
+        stdout_value = sys.stdout.getvalue()
+        stderr_value = sys.stderr.getvalue()
+        return jsonify({
+            "success": False,
+            "error": str(e),
+            "stdout": stdout_value,
+            "stderr": stderr_value
+        }), 500
+    finally:
+        sys.stdout = old_stdout
+        sys.stderr = old_stderr
 
 if __name__ == "__main__":
     print("Starting Banana Eats backend server...")
